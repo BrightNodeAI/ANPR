@@ -5,6 +5,7 @@
 sample_video*.mp4
 output*.mp4
 data/
+*.crdownload
 
 # Python
 __pycache__/

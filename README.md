@@ -7,6 +7,24 @@ plate the pipeline detects and reads, with an annotated video you can download.
 (`cct-s-v2-global-model`, ONNX, CPU) → temporal voting/locking → region-aware validation
 (USA / UK / Hong Kong / Universal).
 
+## Screenshots
+
+Annotated frames from the pipeline processing highway footage — each detected plate is boxed,
+read, and labeled in real time:
+
+<p>
+  <img src="screenshots/__results___6_3.jpg" width="49%" alt="Detected plates GX15OGJ and AP05JSO">
+  <img src="screenshots/__results___6_11.jpg" width="49%" alt="Detected plates AV08HVF, HN14, and EY61NBG">
+</p>
+<p>
+  <img src="screenshots/__results___6_13.jpg" width="49%" alt="Detected plates NA54KGJ, BG65USJ, and AV08HVF">
+  <img src="screenshots/__results___6_15.jpg" width="49%" alt="Detected plates AK64DMV, NA54KGJ, and BG65USJ">
+</p>
+<p>
+  <img src="screenshots/__results___6_23.jpg" width="49%" alt="Detected plates LN15ZZC, GJ06EPD, and AF65JKV">
+  <img src="screenshots/__results___6_29.jpg" width="49%" alt="Detected plates 0WNA, EY09VWS, and DA07CLX">
+</p>
+
 ## Stack
 
 - **Backend:** FastAPI, async background jobs (upload → poll progress → fetch results/video).
