@@ -1,0 +1,142 @@
+/* ============================================================
+   Bright Node — ANPR web app theme  ("Bright Light")
+   Cobalt-blue accent on clean white. Import this in the app
+   and build the UI with these tokens/classes only.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  /* Brand — matched to the Bright Node logo (blue nodes + gold core) */
+  --bn-accent:        #2F6BE0;   /* primary brand blue (satellite nodes) */
+  --bn-accent-hover:  #245BD0;
+  --bn-accent-soft:   #E9EFFD;   /* tint bg for accent chips/soft buttons */
+  --bn-on-accent:     #FFFFFF;
+
+  /* Gold — the focal accent (logo's glowing center node). Use sparingly:
+     hero metric, active detection, progress highlight, the logo mark. */
+  --bn-gold:          #F5A623;
+  --bn-gold-strong:   #E08E0B;
+  --bn-gold-soft:     #FDF0D8;
+  --bn-on-gold:       #4A2E02;
+
+  /* Surfaces */
+  --bn-page:          #F7F8FA;   /* app background */
+  --bn-surface:       #FFFFFF;   /* cards, panels */
+  --bn-surface-soft:  #F3F5F8;   /* metric cards, file chip, inset areas */
+  --bn-header:        #FBFCFD;   /* top bar / table header */
+
+  /* Borders */
+  --bn-border:        #E6E8EC;
+  --bn-border-strong: #D4D8DE;
+
+  /* Text */
+  --bn-text:          #14161A;
+  --bn-text-2:        #5B6470;
+  --bn-text-muted:    #8A93A0;
+
+  /* Region chips (semantic, keep consistent app-wide) */
+  --bn-uk-bg:   #E8EEFE;  --bn-uk-fg:   #1E4FBB;
+  --bn-us-bg:   #E7F4E3;  --bn-us-fg:   #2C6B14;
+  --bn-hk-bg:   #FBEAE3;  --bn-hk-fg:   #993C1D;
+  --bn-univ-bg: #EDEBFB;  --bn-univ-fg: #4A3F9E;
+
+  /* Confidence */
+  --bn-conf-high: #1B9E58;  /* >= 85% */
+  --bn-conf-mid:  #C67D0A;  /* 70-84% */
+  --bn-conf-low:  #D0453B;  /* < 70%  */
+
+  /* Type */
+  --bn-font:  'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  --bn-mono:  'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Shape & spacing */
+  --bn-radius-card: 12px;
+  --bn-radius:      9px;
+  --bn-radius-pill: 999px;
+}
+
+/* ---------- base ---------- */
+body { background: var(--bn-page); color: var(--bn-text); font-family: var(--bn-font); }
+
+/* Type scale runs ~20% larger than a typical UI baseline (per brand pref). */
+.bn-h1 { font-size: 26px; font-weight: 500; margin: 0; }
+.bn-h2 { font-size: 19px; font-weight: 500; margin: 0; }
+.bn-muted { color: var(--bn-text-2); }
+.bn-plate { font-family: var(--bn-mono); font-size: 17px; letter-spacing: 0.02em; }
+body { font-size: 17px; }
+
+/* ---------- surfaces ---------- */
+.bn-card {
+  background: var(--bn-surface);
+  border: 1px solid var(--bn-border);
+  border-radius: var(--bn-radius-card);
+}
+.bn-metric {
+  background: var(--bn-surface-soft);
+  border-radius: var(--bn-radius);
+  padding: 12px 14px;
+}
+.bn-metric .label { font-size: 14px; color: var(--bn-text-2); }
+.bn-metric .value { font-size: 29px; font-weight: 500; }
+.bn-metric .value.accent { color: var(--bn-accent); }
+.bn-metric .value.gold { color: var(--bn-gold-strong); }  /* hero metric, e.g. plates found */
+
+/* ---------- buttons ---------- */
+.bn-btn {
+  font-family: var(--bn-font); font-size: 17px; font-weight: 500;
+  border-radius: var(--bn-radius); padding: 11px 18px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 8px; border: none;
+  background: var(--bn-accent); color: var(--bn-on-accent);
+  transition: background .15s ease;
+}
+.bn-btn:hover { background: var(--bn-accent-hover); }
+.bn-btn.secondary {
+  background: transparent; color: var(--bn-text);
+  border: 1px solid var(--bn-border-strong);
+}
+.bn-btn.secondary:hover { background: var(--bn-surface-soft); }
+
+/* ---------- upload dropzone ---------- */
+.bn-dropzone {
+  border: 1.5px dashed var(--bn-accent);
+  background: var(--bn-accent-soft);
+  border-radius: var(--bn-radius-card);
+  padding: 20px; text-align: center;
+}
+
+/* ---------- region segmented control ---------- */
+.bn-seg { display: inline-flex; gap: 6px; }
+.bn-seg .opt {
+  font-size: 14px; padding: 9px 14px; border-radius: 8px;
+  border: 1px solid var(--bn-border); color: var(--bn-text-2); cursor: pointer;
+}
+.bn-seg .opt[aria-selected="true"] {
+  background: var(--bn-accent); color: var(--bn-on-accent);
+  border-color: var(--bn-accent); font-weight: 500;
+}
+
+/* ---------- region chips ---------- */
+.bn-chip { font-size: 13px; padding: 4px 9px; border-radius: 6px; font-weight: 500; }
+.bn-chip.uk   { background: var(--bn-uk-bg);   color: var(--bn-uk-fg); }
+.bn-chip.us   { background: var(--bn-us-bg);   color: var(--bn-us-fg); }
+.bn-chip.hk   { background: var(--bn-hk-bg);   color: var(--bn-hk-fg); }
+.bn-chip.univ { background: var(--bn-univ-bg); color: var(--bn-univ-fg); }
+
+/* ---------- confidence text ---------- */
+.bn-conf.high { color: var(--bn-conf-high); }
+.bn-conf.mid  { color: var(--bn-conf-mid); }
+.bn-conf.low  { color: var(--bn-conf-low); }
+
+/* ---------- results table ---------- */
+.bn-table { width: 100%; border-collapse: collapse; }
+.bn-table thead th {
+  font-size: 13px; font-weight: 500; text-align: left; color: var(--bn-text-muted);
+  background: var(--bn-header); padding: 10px 15px; border-bottom: 1px solid var(--bn-border);
+}
+.bn-table tbody td { font-size: 16px; padding: 12px 15px; border-bottom: 1px solid #F0F2F5; }
+.bn-table tbody tr:last-child td { border-bottom: none; }
+
+/* ---------- progress bar ---------- */
+.bn-progress { height: 8px; background: var(--bn-surface-soft); border-radius: var(--bn-radius-pill); overflow: hidden; }
+.bn-progress > span { display: block; height: 100%; background: var(--bn-accent); border-radius: var(--bn-radius-pill); }

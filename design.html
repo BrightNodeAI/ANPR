@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bright Node — ANPR design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bn-accent:#2F6BE0; --bn-accent-hover:#245BD0; --bn-accent-soft:#E9EFFD; --bn-on-accent:#fff;
+    --bn-gold:#F5A623; --bn-gold-strong:#E08E0B; --bn-gold-soft:#FDF0D8;
+    --bn-page:#F7F8FA; --bn-surface:#fff; --bn-surface-soft:#F3F5F8; --bn-header:#FBFCFD;
+    --bn-border:#E6E8EC; --bn-border-strong:#D4D8DE;
+    --bn-text:#14161A; --bn-text-2:#5B6470; --bn-text-muted:#8A93A0;
+    --bn-uk-bg:#E8EEFE; --bn-uk-fg:#1E4FBB; --bn-us-bg:#E7F4E3; --bn-us-fg:#2C6B14;
+    --bn-hk-bg:#FBEAE3; --bn-hk-fg:#993C1D; --bn-univ-bg:#EDEBFB; --bn-univ-fg:#4A3F9E;
+    --bn-high:#1B9E58; --bn-mid:#C67D0A; --bn-low:#D0453B;
+    --bn-font:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    --bn-mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bn-page);color:var(--bn-text);font-family:var(--bn-font);font-size:17px;line-height:1.55;}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px 40px;}
+
+  header.bar{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:var(--bn-surface);border-bottom:1px solid var(--bn-border);}
+  .brand{display:flex;align-items:center;gap:11px;}
+  .brand .word{font-size:22px;font-weight:600;letter-spacing:.01em;}
+  .brand .word .b{color:var(--bn-text-2);} .brand .word .n{color:var(--bn-accent);}
+  .brand .tag{font-size:12px;letter-spacing:.14em;color:var(--bn-gold-strong);font-weight:500;}
+  nav{display:flex;gap:22px;font-size:16px;color:var(--bn-text-2);}
+  nav a{text-decoration:none;color:inherit;} nav a.active{color:var(--bn-accent);font-weight:500;}
+
+  h1{font-size:26px;font-weight:500;margin:26px 0 4px;}
+  .sub{color:var(--bn-text-2);margin:0 0 22px;}
+
+  .grid{display:grid;grid-template-columns:1.1fr 1fr;gap:16px;}
+  .card{background:var(--bn-surface);border:1px solid var(--bn-border);border-radius:12px;padding:18px;}
+
+  .dropzone{border:1.5px dashed var(--bn-accent);background:var(--bn-accent-soft);border-radius:12px;padding:18px;display:flex;align-items:center;gap:13px;}
+  .dz-ic{width:44px;height:44px;border-radius:11px;background:#fff;border:1px solid var(--bn-border);display:flex;align-items:center;justify-content:center;color:var(--bn-accent);font-size:22px;}
+  .file-name{font-weight:500;font-size:17px;} .file-meta{font-size:14px;color:var(--bn-text-2);}
+
+  .lbl{font-size:14px;color:var(--bn-text-2);margin:18px 0 8px;}
+  .seg{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;}
+  .seg .opt{text-align:center;font-size:15px;padding:10px 6px;border-radius:8px;border:1px solid var(--bn-border);color:var(--bn-text-2);cursor:pointer;}
+  .seg .opt.sel{background:var(--bn-accent);color:#fff;border-color:var(--bn-accent);font-weight:500;}
+
+  .btn{margin-top:18px;width:100%;background:var(--bn-accent);color:#fff;border:none;border-radius:9px;padding:13px;font-size:17px;font-weight:500;font-family:var(--bn-font);display:inline-flex;align-items:center;justify-content:center;gap:9px;cursor:pointer;}
+  .btn:hover{background:var(--bn-accent-hover);}
+  .btn.ghost{background:transparent;color:var(--bn-text);border:1px solid var(--bn-border-strong);width:auto;padding:9px 15px;font-size:15px;margin:0;}
+  .btn.ghost:hover{background:var(--bn-surface-soft);}
+
+  .metrics{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+  .metric{background:var(--bn-surface-soft);border-radius:10px;padding:14px;}
+  .metric .m-l{font-size:14px;color:var(--bn-text-2);} .metric .m-v{font-size:29px;font-weight:500;}
+  .metric .m-v.gold{color:var(--bn-gold-strong);} .metric .m-v.blue{color:var(--bn-accent);}
+
+  .prog-row{display:flex;align-items:center;justify-content:space-between;font-size:14px;color:var(--bn-text-2);margin:16px 0 7px;}
+  .prog{height:9px;background:var(--bn-surface-soft);border-radius:999px;overflow:hidden;}
+  .prog>span{display:block;height:100%;width:100%;background:var(--bn-gold);border-radius:999px;}
+  .thumbs{display:flex;gap:8px;margin-top:14px;}
+  .thumb{flex:1;height:52px;background:var(--bn-surface-soft);border:1px solid var(--bn-border);border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--bn-text-muted);font-size:20px;}
+
+  .results{margin-top:20px;}
+  .r-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;}
+  .r-head h2{font-size:19px;font-weight:500;margin:0;}
+  table{width:100%;border-collapse:collapse;background:var(--bn-surface);border:1px solid var(--bn-border);border-radius:12px;overflow:hidden;}
+  thead th{font-size:13px;font-weight:500;text-align:left;color:var(--bn-text-muted);background:var(--bn-header);padding:11px 16px;border-bottom:1px solid var(--bn-border);}
+  tbody td{font-size:16px;padding:13px 16px;border-bottom:1px solid #F0F2F5;}
+  tbody tr:last-child td{border-bottom:none;}
+  .plate{font-family:var(--bn-mono);font-size:16px;font-weight:500;}
+  .chip{font-size:13px;padding:4px 9px;border-radius:6px;font-weight:500;}
+  .chip.uk{background:var(--bn-uk-bg);color:var(--bn-uk-fg);} .chip.us{background:var(--bn-us-bg);color:var(--bn-us-fg);}
+  .chip.hk{background:var(--bn-hk-bg);color:var(--bn-hk-fg);} .chip.univ{background:var(--bn-univ-bg);color:var(--bn-univ-fg);}
+  .conf.high{color:var(--bn-high);} .conf.mid{color:var(--bn-mid);} .conf.low{color:var(--bn-low);}
+
+  footer{max-width:960px;margin:0 auto;padding:20px;color:var(--bn-text-muted);font-size:13px;letter-spacing:.06em;text-align:center;}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="brand">
+    <svg width="34" height="34" viewBox="0 0 120 120" aria-label="Bright Node">
+      <defs>
+        <radialGradient id="g" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#FFF0BF"/><stop offset="30%" stop-color="#FBC03F"/>
+          <stop offset="62%" stop-color="#F5A623"/><stop offset="100%" stop-color="#F5A623" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="n" cx="38%" cy="35%" r="70%">
+          <stop offset="0%" stop-color="#5B90F2"/><stop offset="100%" stop-color="#2F6BE0"/>
+        </radialGradient>
+      </defs>
+      <polygon points="60,18 96,38 96,80 60,100 24,80 24,38" fill="none" stroke="#E4E8EE" stroke-width="1.4"/>
+      <g stroke="#CBD2DB" stroke-width="1.6">
+        <line x1="60" y1="59" x2="60" y2="18"/><line x1="60" y1="59" x2="96" y2="38"/><line x1="60" y1="59" x2="96" y2="80"/>
+        <line x1="60" y1="59" x2="60" y2="100"/><line x1="60" y1="59" x2="24" y2="80"/><line x1="60" y1="59" x2="24" y2="38"/>
+      </g>
+      <circle cx="60" cy="18" r="7" fill="url(#n)"/><circle cx="96" cy="38" r="7" fill="url(#n)"/><circle cx="96" cy="80" r="7" fill="url(#n)"/>
+      <circle cx="60" cy="100" r="7" fill="url(#n)"/><circle cx="24" cy="80" r="7" fill="url(#n)"/><circle cx="24" cy="38" r="7" fill="url(#n)"/>
+      <circle cx="60" cy="59" r="21" fill="url(#g)"/><circle cx="60" cy="59" r="7.5" fill="#F7B233"/><circle cx="60" cy="59" r="3.6" fill="#FFF3D0"/>
+    </svg>
+    <span class="word"><span class="b">Bright</span><span class="n">Node</span></span>
+    <span class="tag">ANPR</span>
+  </div>
+  <nav><a class="active">Analyze</a><a>History</a><a>Docs</a></nav>
+</header>
+
+<div class="wrap">
+  <h1>Read plates from highway footage</h1>
+  <p class="sub">Upload a video, choose a plate region, and get every plate detected and read.</p>
+
+  <div class="grid">
+    <div class="card">
+      <div class="dropzone" style="flex-direction:column;text-align:center;padding:26px 18px;">
+        <div class="dz-ic" style="margin-bottom:11px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4M8 8l4-4 4 4"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg></div>
+        <div class="file-name">Drag &amp; drop a video, or browse</div>
+        <div class="file-meta">Accepts MP4, MOV, AVI, MKV, WebM and more</div>
+      </div>
+      <div class="lbl">Plate region</div>
+      <div class="seg">
+        <div class="opt">USA</div><div class="opt">UK</div><div class="opt">Hong Kong</div><div class="opt sel">Universal</div>
+      </div>
+      <button class="btn">▶  Analyze video</button>
+    </div>
+
+    <div class="card">
+      <div class="metrics">
+        <div class="metric"><div class="m-l">Plates found</div><div class="m-v gold">12</div></div>
+        <div class="metric"><div class="m-l">Avg confidence</div><div class="m-v">91%</div></div>
+        <div class="metric"><div class="m-l">Frames</div><div class="m-v">1,800</div></div>
+        <div class="metric"><div class="m-l">Runtime</div><div class="m-v">2m 14s</div></div>
+      </div>
+      <div class="prog-row"><span>Analysis complete</span><span>1800 / 1800</span></div>
+      <div class="prog"><span></span></div>
+      <div class="lbl" style="margin:16px 0 8px;">Annotated frames</div>
+      <div class="thumbs"><div class="thumb">▦</div><div class="thumb">▦</div><div class="thumb">▦</div><div class="thumb">▦</div></div>
+    </div>
+  </div>
+
+  <div class="results">
+    <div class="r-head">
+      <h2>Detected plates</h2>
+      <button class="btn ghost">↓  Download annotated video</button>
+    </div>
+    <table>
+      <thead><tr><th>Plate</th><th>Region</th><th>Confidence</th><th>First seen</th></tr></thead>
+      <tbody>
+        <tr><td class="plate">AB12 CDE</td><td><span class="chip uk">UK</span></td><td class="conf high">94%</td><td>0:03</td></tr>
+        <tr><td class="plate">8XKT445</td><td><span class="chip us">USA</span></td><td class="conf high">89%</td><td>0:07</td></tr>
+        <tr><td class="plate">SM7080</td><td><span class="chip hk">HK</span></td><td class="conf mid">78%</td><td>0:11</td></tr>
+        <tr><td class="plate">LJ23 KWM</td><td><span class="chip uk">UK</span></td><td class="conf high">90%</td><td>0:15</td></tr>
+        <tr><td class="plate">FX1899</td><td><span class="chip univ">AUTO</span></td><td class="conf low">67%</td><td>0:19</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<footer>DATA&nbsp;&nbsp;·&nbsp;&nbsp;VISION&nbsp;&nbsp;·&nbsp;&nbsp;PYTHON</footer>
+
+</body>
+</html>

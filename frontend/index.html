@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bright Node — ANPR</title>
+<link rel="icon" href="logo-mark.svg" type="image/svg+xml">
+<link rel="stylesheet" href="theme.css">
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px 40px;}
+
+  header.bar{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:var(--bn-surface);border-bottom:1px solid var(--bn-border);}
+  .brand{display:flex;align-items:center;gap:11px;}
+  .brand img{width:34px;height:34px;display:block;}
+  .brand .word{font-size:22px;font-weight:600;letter-spacing:.01em;}
+  .brand .word .b{color:var(--bn-text-2);} .brand .word .n{color:var(--bn-accent);}
+  .brand .tag{font-size:12px;letter-spacing:.14em;color:var(--bn-gold-strong);font-weight:500;}
+  nav{display:flex;gap:22px;font-size:16px;color:var(--bn-text-2);}
+  nav a{text-decoration:none;color:inherit;} nav a.active{color:var(--bn-accent);font-weight:500;}
+
+  h1{font-size:26px;font-weight:500;margin:26px 0 4px;}
+  .sub{color:var(--bn-text-2);margin:0 0 22px;}
+
+  .grid{display:grid;grid-template-columns:1.1fr 1fr;gap:16px;}
+  @media (max-width:720px){.grid{grid-template-columns:1fr;}}
+  .card{background:var(--bn-surface);border:1px solid var(--bn-border);border-radius:12px;padding:18px;}
+
+  .dropzone{flex-direction:column;text-align:center;padding:26px 18px;cursor:pointer;}
+  .dropzone.drag-over{background:var(--bn-gold-soft);border-color:var(--bn-gold);}
+  .dz-ic{width:44px;height:44px;border-radius:11px;background:#fff;border:1px solid var(--bn-border);display:flex;align-items:center;justify-content:center;color:var(--bn-accent);font-size:22px;margin:0 auto 11px;}
+  .file-name{font-weight:500;font-size:17px;} .file-meta{font-size:14px;color:var(--bn-text-2);}
+
+  .lbl{font-size:14px;color:var(--bn-text-2);margin:18px 0 8px;}
+  .seg{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;}
+  .seg .opt{text-align:center;}
+
+  .btn{margin-top:18px;width:100%;justify-content:center;}
+  .btn:disabled{opacity:.5;cursor:not-allowed;}
+
+  .metrics{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+
+  .prog-row{display:flex;align-items:center;justify-content:space-between;font-size:14px;color:var(--bn-text-2);margin:16px 0 7px;}
+  .thumbs{display:flex;gap:8px;margin-top:14px;}
+  .thumb{flex:1;height:64px;background:var(--bn-surface-soft);border:1px solid var(--bn-border);border-radius:9px;overflow:hidden;display:flex;align-items:center;justify-content:center;color:var(--bn-text-muted);font-size:20px;}
+  .thumb img{width:100%;height:100%;object-fit:cover;}
+
+  .hidden{display:none !important;}
+
+  .results{margin-top:20px;}
+  .r-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;}
+  table{width:100%;border-collapse:collapse;background:var(--bn-surface);border:1px solid var(--bn-border);border-radius:12px;overflow:hidden;}
+
+  .empty-state{text-align:center;padding:40px 20px;color:var(--bn-text-2);}
+  .empty-state img{width:100px;margin-bottom:12px;opacity:.9;}
+
+  .error-banner{background:#FBEAE3;color:#993C1D;border-radius:9px;padding:12px 16px;margin-top:14px;font-size:15px;}
+
+  footer{max-width:960px;margin:0 auto;padding:20px;color:var(--bn-text-muted);font-size:13px;letter-spacing:.06em;text-align:center;}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="brand">
+    <img src="logo-mark.svg" alt="Bright Node">
+    <span class="word"><span class="b">Bright</span><span class="n">Node</span></span>
+    <span class="tag">ANPR</span>
+  </div>
+  <nav><a class="active">Analyze</a><a>History</a><a>Docs</a></nav>
+</header>
+
+<div class="wrap">
+  <h1>Read plates from highway footage</h1>
+  <p class="sub">Upload a video, choose a plate region, and get every plate detected and read.</p>
+
+  <div class="grid">
+    <div class="card">
+      <div class="bn-dropzone dropzone" id="dropzone">
+        <div class="dz-ic">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4M8 8l4-4 4 4"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+        </div>
+        <div class="file-name" id="fileName">Drag &amp; drop a video, or browse</div>
+        <div class="file-meta" id="fileMeta">Accepts MP4, MOV, AVI, MKV, WebM and more</div>
+        <input type="file" id="fileInput" accept="video/*" class="hidden">
+      </div>
+
+      <div class="lbl">Plate region</div>
+      <div class="seg bn-seg" id="regionSeg">
+        <div class="opt" data-region="US">USA</div>
+        <div class="opt" data-region="UK">UK</div>
+        <div class="opt" data-region="HK">Hong Kong</div>
+        <div class="opt" data-region="AUTO" aria-selected="true">Universal</div>
+      </div>
+
+      <button class="btn bn-btn" id="analyzeBtn" disabled>&#9654;&nbsp; Analyze video</button>
+      <div class="error-banner hidden" id="uploadError"></div>
+    </div>
+
+    <div class="card" id="statusCard">
+      <div class="empty-state" id="emptyState">
+        <img src="logo-full.svg" alt="">
+        <div>Results appear here once you analyze a video.</div>
+      </div>
+
+      <div id="progressState" class="hidden">
+        <div class="prog-row"><span id="progressLabel">Analyzing…</span><span id="progressCount">0 / 0</span></div>
+        <div class="bn-progress"><span id="progressBar" style="width:0%"></span></div>
+      </div>
+
+      <div id="doneState" class="hidden">
+        <div class="metrics">
+          <div class="bn-metric"><div class="label">Plates found</div><div class="value gold" id="metricPlates">0</div></div>
+          <div class="bn-metric"><div class="label">Avg confidence</div><div class="value" id="metricConf">0%</div></div>
+          <div class="bn-metric"><div class="label">Frames</div><div class="value" id="metricFrames">0</div></div>
+          <div class="bn-metric"><div class="label">Runtime</div><div class="value" id="metricRuntime">0s</div></div>
+        </div>
+        <div class="lbl" style="margin:16px 0 8px;">Annotated frames</div>
+        <div class="thumbs" id="thumbs"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="results hidden" id="resultsSection">
+    <div class="r-head">
+      <h2 class="bn-h2">Detected plates</h2>
+      <a class="btn bn-btn secondary" id="downloadBtn" download="annotated.mp4">&#8595;&nbsp; Download annotated video</a>
+    </div>
+    <table class="bn-table">
+      <thead><tr><th>Plate</th><th>Region</th><th>Confidence</th><th>First seen</th></tr></thead>
+      <tbody id="resultsBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<footer>DATA&nbsp;&nbsp;&middot;&nbsp;&nbsp;VISION&nbsp;&nbsp;&middot;&nbsp;&nbsp;PYTHON</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
