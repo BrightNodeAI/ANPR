@@ -55,7 +55,9 @@ weights_volume = modal.Volume.from_name(WEIGHTS_VOLUME_NAME, create_if_missing=T
     timeout=1800,
     max_containers=1,
     scaledown_window=300,
+    cpu=2.0,
 )
+@modal.concurrent(max_inputs=20)
 @modal.asgi_app()
 def fastapi_app():
     import sys
