@@ -231,6 +231,20 @@ def draw_plate_label(frame, text, x1, y1, x2, y2):
     cv2.putText(frame, text, (tx, ty), font, fs, (0, 255, 0), th_)
     cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 3)
 
+def draw_persistent_labels(frame, persistent_labels, region):
+    """Redraw the last-known locked plate boxes/labels onto a frame.
+
+    Used on frames skipped by frame_stride so the overlay stays visible between
+    processed frames instead of blinking off (which shows up as flicker)."""
+    for (x1, y1, x2, y2, text) in persistent_labels.values():
+        if text and validate_plate(text, region):
+            draw_plate_label(frame, text, x1, y1, x2, y2)
+
+
+
+
+
+
 
 def merge_overlapping_boxes(bl, iou_threshold=0.3):
     if len(bl) <= 1:
@@ -334,10 +348,12 @@ def process_video(video_path=DEFAULT_VIDEO, output_path=None, region="AUTO",
             break
         frame_count += 1
 
+
         if frame_stride > 1 and (frame_count - start_frame) % frame_stride != 0:
+            draw_persistent_labels(frame, persistent_labels, region)
             out.write(frame)
             continue
-
+         
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         results = model(frame_rgb, verbose=False, imgsz=imgsz, conf=conf,
                         iou=0.4, max_det=20)
